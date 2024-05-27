@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- {% block title %} Редактирование {% endblock %} -->
+<div id="wrapper">
+       <div class="template_form">
+              <form method="post">
+                     <fieldset>
+                            <legend>Выбирите один или несколько дней:</legend>
+                            <article class="feature1">
+                            <input type="checkbox" value="2" name="days" id="feature1"/>
+                            <div>
+                            <span>
+                            пн
+                            </span>
+                            </div>
+                            </article>
+                            
+                            <article class="feature2">
+                            <input type="checkbox" value="4" name="days" id="feature2"/>
+                            <div>
+                            <span>
+                                   вт
+                            </span>
+                            </div>
+                            </article>
+                            
+                            <article class="feature3">
+                            <input type="checkbox" value="8" name="days" id="feature3"/>
+                            <div>
+                            <span>
+                                   ср
+                            </span>
+                            </div>
+                            </article>
+                            
+                            <article class="feature4">
+                            <input type="checkbox" value="16" name="days" id="feature4"/>
+                            <div>
+                            <span>
+                                   чт
+                            </span>
+                            </div>
+                            </article>
+                     
+                            <article class="feature5">
+                            <input type="checkbox" value="32" name="days" id="feature5"/>
+                            <div>
+                            <span>
+                                   пт
+                            </span>
+                            </div>
+                            </article>
+                     
+                            <article class="feature6">
+                            <input type="checkbox" value="64" name="days" id="feature6"/>
+                            <div>
+                            <span>
+                                   сб
+                            </span>
+                            </div>
+                            </article>
+                     
+                            <article class="feature7">
+                            <input type="checkbox" value="1" name="days" id="feature7"/>
+                            <div>
+                            <span>
+                                   вс
+                            </span>
+                            </div>
+                            </article>                        
+                     </fieldset>
+                     <input type="number" name="dayssum" id="dayssum" value="{{ event['id_day'] }}"/>       
+                     <label for="date">Дата для запланированного события</label> 
+                     <input type="date" name="date" value="{{ event['date'] or request.form['time'] }}"></input>      
+                     <label for="time">Время (указывается в GMT+5)</label>
+                     <input type="time" name="time"
+                            placeholder="Время события"
+                            value="{{ event['time'] or request.form['time'] }}"></input>  
+                     <label for="lead">Инициатор</label>
+                     <input type="text" list="lead_select" name="lead"
+                            placeholder="Кто проводит событие"
+                            value="{{ event['lead'] or request.form['lead'] }}"></input>
+                     <datalist id="lead_select" name="lead_select">
+                            {% for lead in leads %}
+                            <option value="{{ lead['name'] }}" label="{{ lead['name'] }}"></option>
+                            {% endfor %}                                                    
+                     </datalist>                             
+                     <label for="theme">Тема</label>
+                     <textarea type="text" name="theme"
+                            placeholder="Тема события">{{ event['theme'] or request.form['theme'] }}</textarea>
+                     <label for="actors">Участники</label>
+                     <input type="text" name="actors"
+                            placeholder="Участники события"
+                            value="{{ event['actors'] or request.form['actors'] }}"></input>
+                     <label for="weekInput">Будет:</label>
+                     <select id="weekList" name="enable">
+                     <option id="1" value="1" label="будет"></option>
+                     <option id="0" value="0" label="не будет"></option>
+                     </select>
+                     <button type="submit">Изменить</button>
+              </form>
+              <hr>
+              <form action="{{ url_for('delete', id=event['id']) }}" method="POST">
+                     <input class="btn" type="submit" value="Удалить событие"
+                            onclick="return confirm('Вы действиетльно хотите удалить это событие?')">
+              </form>
+    </div>
+</div> 
+<script>
+       var checkboxes = document.querySelectorAll("input[type=checkbox][name=days]");
+       var dayssum = document.getElementById(dayssum);
+       let enabledSettings = []
+
+       checkboxes.forEach(function(checkbox) {
+       checkbox.addEventListener('change', function() {
+       enabledSettings = 
+       Array.from(checkboxes) // Convert checkboxes to an array to use filter and map.
+       .filter(i => i.checked) // Use Array.filter to remove unchecked checkboxes.
+       .map(i => i.value) // Use Array.map to extract only the checkbox values from the array of objects.
+       
+       // console.log(enabledSettings);
+       const sum = enabledSettings.reduce((partialSum, a) => +partialSum + +a, 0);
+       console.log(sum);
+       document.getElementById("dayssum").value=sum;
+       })
+       });       
+       let sumFromDb = "{{ event['id_day'] }}";
+       let enable = "{{ event['enable'] }}";
+       let crntEnable = document.getElementById(enable);                       
+       crntEnable.selected = true;
+       var checkboxes = document.querySelectorAll("input[type=checkbox][name=days]");
+       console.log(checkboxes);
+       for (let index = 0; index < checkboxes.length; index++) {
+       if ((sumFromDb&checkboxes[index].value)>0){
+       checkboxes[index].checked = true;
+       }
+       }    
+ </script>    
+{% endblock %}

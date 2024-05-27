@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- {% block title %} Главная {% endblock %} -->
+    {% for event in events %}
+        <div class="post{{ event['enable'] }}">
+            <p><span class="dayWeek">{{ event['id_day'] }}</span>{{ event['date'], event['time'], event['lead'], event['theme'], event['actors'] }}</p>
+            <b class="{{ event['enable'] }}"></b><a href="{{ url_for('edit', id=event['id']) }}" class="edit">Редактировать</a>
+        </div>
+    {% endfor %}
+<script>
+    let ok = String.fromCodePoint(0x2705);
+    let bad = String.fromCodePoint(128164);
+    let crntdisable = document.getElementsByClassName("0");    
+    let crntenable = document.getElementsByClassName("1");    
+    for(var i = 0; i < crntdisable.length; i++){
+        crntdisable[i].textContent=bad;
+    }
+    for(var i = 0; i < crntenable.length; i++){
+        crntenable[i].textContent=ok;
+    }
+    const daysOfWeek =  new Map([
+        [2, 'пн'],
+        [4, 'вт'],
+        [8, 'ср'],
+        [16, 'чт'],
+        [32, 'пт'],
+        [64, 'сб'],
+        [1, 'вс'],        
+    ]);
+    const dayWeek = document.getElementsByClassName("dayWeek");
+    let daysTxt = "";
+    for (var i = 0; i < dayWeek.length; i++) {
+        let days = dayWeek[i].textContent;
+        daysTxt = "";
+        for (const el of daysOfWeek) {
+            if ((days&el[0])>0){
+                daysTxt+=el[1]+" ";
+            }
+            console.log(el);
+        }
+        dayWeek[i].textContent=daysTxt;
+        console.log(days);
+    }
+
+</script>    
+{% endblock %}
